@@ -1,0 +1,52 @@
+# Node.js dependencies
+node_modules/
+.pnpm/
+.pnpm-debug.log
+.pnpm-store/
+
+# Vite cache
+.vite/
+
+# Build output
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# macOS
+.DS_Store
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local development tools
+coverage/
+*.local
+*.log
+*.tgz
+
+# Optional lockfile ignore (usually should be tracked)
+# pnpm-lock.yaml
+
+# Output from TypeScript
+*.tsbuildinfo
+
+# JetBrains IDEs
+*.iml
+out/
+
+# System
+Thumbs.db
