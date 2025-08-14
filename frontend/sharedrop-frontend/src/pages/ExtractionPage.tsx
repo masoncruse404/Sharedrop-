@@ -161,8 +161,7 @@ const handleExportExcelImage = async () => {
     ['File Size', `${(file_size_bytes / 1024).toFixed(2)} KB`],
     ['Has Transparency', has_transparency ? 'Yes' : 'No'],
     ['Extracted At', extracted_at],
-    ['Filename', filename],
-    ['File Type', file_type]
+    ['Filename', filename]
   ];
 
   sheet.addTable({
