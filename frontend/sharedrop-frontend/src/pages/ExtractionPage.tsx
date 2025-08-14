@@ -127,8 +127,80 @@ const handleExportCSV = () => {
 };
 
 
+const handleExportExcelImage = async () => {
+  if (!extractionResult) return;
 
-const handleExportExcel = async () => {
+  const {
+    format,
+    mode,
+    size,
+    file_size_bytes,
+    has_transparency,
+    extracted_at,
+    filename,
+    file_type
+  } = extractionResult.data;
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Image Metadata Report');
+
+  let currentRow = 1;
+
+  // ---- IMAGE METADATA ----
+  sheet.mergeCells(`A${currentRow}:B${currentRow}`);
+  sheet.getCell(`A${currentRow}`).value = 'Image Metadata';
+  sheet.getCell(`A${currentRow}`).font = { bold: true, size: 14 };
+  currentRow++;
+
+  const metadataRows = [
+    ['Format', format],
+    ['Mode', mode],
+    ['Width', `${size.width} pixels`],
+    ['Height', `${size.height} pixels`],
+    ['Dimensions', `${size.width} × ${size.height}`],
+    ['File Size', `${(file_size_bytes / 1024).toFixed(2)} KB`],
+    ['Has Transparency', has_transparency ? 'Yes' : 'No'],
+    ['Extracted At', extracted_at],
+    ['Filename', filename],
+    ['File Type', file_type]
+  ];
+
+  sheet.addTable({
+    name: 'ImageMetadataTable',
+    ref: `A${currentRow}`,
+    headerRow: true,
+    style: { theme: 'TableStyleMedium5', showRowStripes: true },
+    columns: [{ name: 'Field' }, { name: 'Value' }],
+    rows: metadataRows
+  });
+
+  // Auto fit column widths
+  sheet.columns.forEach(col => {
+    let maxLength = 0;
+    col.eachCell({ includeEmpty: true }, cell => {
+      const cellValue = cell.value ? cell.value.toString() : '';
+      maxLength = Math.max(maxLength, cellValue.length);
+    });
+    col.width = maxLength < 15 ? 15 : maxLength + 2;
+  });
+
+  // Export Excel
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `image-metadata-${extractionResult.file_id}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+
+const handleExportExcelPdf = async () => {
   if (!extractionResult) return;
 
   const { text_stats, top_keywords, top_phrases, sample_highlights, extracted_at, filename, file_type, file_size_bytes } = extractionResult.data;
@@ -353,14 +425,14 @@ const handleExportExcel = async () => {
               data={extractionResult.data as ImageMetadata}
                 onExportCSV={handleExportCSV}
                 onExportJSON={handleExportJSON}
-                onExportEXCEL={handleExportExcel}
+                onExportEXCEL={handleExportExcelImage}
             />
           ) : (
             <HighlightsViewer
               data={extractionResult.data as HighlightsData}
                 onExportCSV={handleExportCSV}
                 onExportJSON={handleExportJSON}
-                onExportEXCEL={handleExportExcel}
+                onExportEXCEL={handleExportExcelPdf}
             />
           )}
         </div>
