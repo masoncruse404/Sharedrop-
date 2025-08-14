@@ -68,7 +68,7 @@ export const ExtractionPage = () => {
 
 // Export as JSON
 const handleExportJSON = () => {
-  console.log('extractionResult', extractionResult);
+ 
   if (extractionResult) {
     const dataStr = JSON.stringify(extractionResult.data, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
